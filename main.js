@@ -85,9 +85,15 @@ Apify.main(async () => {
 
             for (const r of resultElems.toArray()) {
                 const jThis = $(r);
-                const getText = (selector) => {
-                    const text = jThis.find(selector).text().trim();
-                    return text.length > 0 ? text : undefined;
+                const getText = (selector) => { // fix? from https://github.com/cermak-petr/actor-yellowpages-scraper/issues/7#issuecomment-1181997763
+                const text = jThis.find(selector)
+                    .contents()
+                    .map(function () {
+                        return $(this).text();
+                    })
+                    .get()
+                    .join(' ');
+                return text.length > 0 ? text : undefined;
                 };
                 const businessSlug = jThis.find('a.business-name').attr('href');
                 const address = getText('.adr')
